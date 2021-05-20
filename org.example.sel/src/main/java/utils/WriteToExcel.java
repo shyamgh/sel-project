@@ -1,9 +1,14 @@
+/**
+ * @shyamhushangabadkar
+ */
 package utils;
 
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.util.HashMap;
+import java.util.Map;
 
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.apache.poi.ss.usermodel.Cell;
@@ -11,14 +16,24 @@ import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
-
+import selenium_base.Constants;
 
 
 public class WriteToExcel{
 
-    public int startRowNumber;
+    public static int iterationStart=-1;
+    public int startRowNumber=-1;
+    public static String iteration;
+    public static Map<String, Integer> iterationMap = new HashMap<String, Integer>();
 
-    public int getStartRowNumber() {
+
+    public void resetIterationRow(){
+        iterationStart = -1;
+        startRowNumber = -1;
+        iterationMap.clear();
+    }
+
+    public int getStartRowNumber(String itr) {
         return startRowNumber;
     }
 
@@ -26,20 +41,28 @@ public class WriteToExcel{
         startRowNumber = rowNum;
     }
 
-    public static void main(String[] args) throws IOException {
-        /*writeExcel2("data.xls", "Sheet1",
-                new String[]{"Iteration-1", "LN:12345", "file1", "file2", "file3", "file4"});
-        writeExcel2("data.xls", "Sheet1",
-                new String[]{"Iteration-2", "LN:12345","file1", "file2", "file3", "file4",
-                        "file1", "file2", "file3"});
-        writeExcel2("data.xls", "Sheet1",
-                new String[]{"Iteration-3", "LN:12345", "file1", "file2", "file3", "file4",
-                        "file1", "file2", "file3", "file1", "file2"});*/
+    public void setRowNumber(Sheet sheet, String [] dataToWrite, int colNumber){
+        int lastRowNumber = sheet.getLastRowNum() - sheet.getFirstRowNum();
+        if(lastRowNumber != 0){
+            lastRowNumber += 1;
+        }
+        if(iterationStart<0){
+            iterationStart = lastRowNumber;
+        }
+
+        if ( ! iterationMap.containsKey(dataToWrite[0])){
+            iterationMap.put(dataToWrite[0], iterationStart);
+            setStartRowNumber(iterationStart);
+        }
+        else{
+            setStartRowNumber(getStartRowNumber(dataToWrite[0])+dataToWrite.length);
+        }
+
     }
 
     public void writeExcel2(String fileName, String sheetName,String [] dataToWrite) throws IOException {
-        String filePath = "D:\\Development\\Selenium Project\\";
-        File file = new File(filePath+ fileName );
+        String filePath = Constants.Path_TestData;
+        File file = new File(filePath + File.separator + fileName );
         FileInputStream inputStream = new FileInputStream(file);
 
         Workbook wb1 = null;
@@ -53,21 +76,20 @@ public class WriteToExcel{
 
         Sheet sheet = wb1.getSheet(sheetName);
         int colNumber = Integer.parseInt(dataToWrite[0].split("-")[1])-1;
-        if (colNumber == 0) {
-            int lastRowNumber = sheet.getLastRowNum() - sheet.getFirstRowNum();
-            setStartRowNumber(lastRowNumber);
-        }
 
-        Row zeroRowNumber = getRow(sheet ,getStartRowNumber());
-        Row  firstRowNumber = getRow(sheet ,getStartRowNumber()+1);
-        System.out.println(getStartRowNumber());
+        setRowNumber(sheet, dataToWrite, colNumber);
+
+        String itr = dataToWrite[0];
+        Row zeroRowNumber = getRow(sheet ,getStartRowNumber(itr));
+        Row  firstRowNumber = getRow(sheet ,getStartRowNumber(itr)+1);
+        System.out.println(getStartRowNumber(itr));
         Cell iterationCell = zeroRowNumber.createCell(colNumber);
         iterationCell.setCellValue(dataToWrite[0]);
         Cell loanNumberCell = firstRowNumber.createCell(colNumber);
         loanNumberCell.setCellValue(dataToWrite[1]);
 
         for(int j = 2; j < dataToWrite.length; j++){
-            Row  newRow = getRow(sheet ,getStartRowNumber()+j);
+            Row  newRow = getRow(sheet ,getStartRowNumber(itr)+j);
             Cell cell = newRow.createCell(colNumber);
             cell.setCellValue(dataToWrite[j]);
         }

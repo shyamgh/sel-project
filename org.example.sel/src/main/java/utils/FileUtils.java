@@ -1,18 +1,19 @@
+/**
+ * @shyamhushangabadkar
+ */
 package utils;
 
 import org.openqa.selenium.*;
-import selenium_base.SeleniumBase;
+import selenium_base.TestBase;
 
-public class FileUtils {
+public class FileUtils extends TestBase {
 
 	public void uploadFile(String filePath){
-//		driver().get("https://tus.io/demo.html");
-//		String id = "js-file-input";
-		SeleniumBase.getDriver().get("file:///D:/Development/Selenium%20Project/uploadf.html");
-		String id = "newloanin";
-		WebElement upldBox = SeleniumBase.getDriver().findElement(By.id(id));
+		getDriver().get("https://tus.io/demo.html");
+		String id = "js-file-input";
+		WebElement upldBox = getDriver().findElement(By.id(id));
 
-		JavascriptExecutor js = (JavascriptExecutor) SeleniumBase.getDriver();
+		JavascriptExecutor js = (JavascriptExecutor) getDriver();
 		String script = "arguments[0].removeAttribute('readonly','readonly')";
 		js.executeScript(script, upldBox);
 

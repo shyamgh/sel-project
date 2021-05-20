@@ -6,10 +6,14 @@
 	      <listener class-name="org.uncommons.reportng.JUnitXMLReporter"/>
 	  </listeners>
   <test name="Test">
-  	<classes>
-  		<!-- class name="TC1"></class -->
-		<class name="tests.TC1" />
-		<class name="tests.TC2" />
-  	</classes>
+<!--  	<classes>-->
+<!--  		&lt;!&ndash; class name="TC1"></class &ndash;&gt;-->
+<!--		<class name="tests.others.TC1" />-->
+<!--		<class name="tests.others.TC2" />-->
+<!--  	</classes>-->
+	  <packages>
+		  <package name="tests.others"/>
+		  <package name="tests.opensourcecms"/>
+	  </packages>
   </test> <!-- Test -->
 </suite> <!-- Suite -->
